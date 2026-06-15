@@ -9,7 +9,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# CORS Fix
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -41,19 +41,27 @@ def home():
 @app.get("/ask")
 def ask(question: str):
 
+    # Retrieve relevant chunks
     results = collection.query(
         query_texts=[question],
-        n_results=2
+        n_results=3
     )
 
     context = "\n\n".join(
         results["documents"][0]
     )
 
+    context = context[:4000]
+
     prompt = f"""
 You are VITAssist AI.
 
 Answer ONLY from the provided context.
+
+If the answer is not present in the context,
+reply exactly:
+
+I don't know based on the available documents.
 
 CONTEXT:
 {context}
@@ -65,6 +73,7 @@ ANSWER:
 """
 
     try:
+
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt
@@ -76,6 +85,12 @@ ANSWER:
         }
 
     except Exception as e:
+
+        print("Gemini Error:", e)
+
+        # Fallback
         return {
-            "error": str(e)
+            "question": question,
+            "answer": context[:1000],
+            "warning": "Gemini quota exceeded. Showing retrieved document content."
         }
