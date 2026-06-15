@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import chromadb
 import os
 from dotenv import load_dotenv
@@ -7,6 +8,15 @@ from google import genai
 load_dotenv()
 
 app = FastAPI()
+
+# CORS Fix
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Gemini
 client = genai.Client(
@@ -24,7 +34,9 @@ collection = chroma_client.get_collection(
 
 @app.get("/")
 def home():
-    return {"message": "VITAssist API Running 🚀"}
+    return {
+        "message": "VITAssist API Running 🚀"
+    }
 
 @app.get("/ask")
 def ask(question: str):
@@ -39,21 +51,31 @@ def ask(question: str):
     )
 
     prompt = f"""
-Answer ONLY using the context below.
+You are VITAssist AI.
+
+Answer ONLY from the provided context.
 
 CONTEXT:
 {context}
 
 QUESTION:
 {question}
+
+ANSWER:
 """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
 
-    return {
-        "question": question,
-        "answer": response.text
-    }
+        return {
+            "question": question,
+            "answer": response.text
+        }
+
+    except Exception as e:
+        return {
+            "error": str(e)
+        }
