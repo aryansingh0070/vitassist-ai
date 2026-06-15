@@ -2,3 +2,5 @@
 __pycache__/
 venv/
 chroma_db/
+pdfs/
+test_key.py
