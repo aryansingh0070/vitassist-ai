@@ -2,64 +2,132 @@ import { useState } from "react";
 
 function App() {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const askQuestion = async () => {
+    if (!question.trim()) return;
+
+    const userQuestion = question;
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "user",
+        text: userQuestion,
+      },
+    ]);
+
+    setQuestion("");
+    setLoading(true);
+
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/ask?question=${encodeURIComponent(question)}`
+        `http://127.0.0.1:8000/ask?question=${encodeURIComponent(
+          userQuestion
+        )}`
       );
 
       const data = await response.json();
 
-      if (data.answer) {
-        setAnswer(data.answer);
-      } else {
-        setAnswer(JSON.stringify(data));
-      }
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: data.answer || "No response received",
+        },
+      ]);
     } catch (error) {
-      console.error(error);
-      setAnswer("❌ Backend connection failed");
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: "❌ Backend connection failed",
+        },
+      ]);
     }
+
+    setLoading(false);
   };
 
   return (
     <div
       style={{
-        maxWidth: "800px",
-        margin: "40px auto",
+        maxWidth: "900px",
+        margin: "20px auto",
         padding: "20px",
         fontFamily: "Arial",
       }}
     >
       <h1>🎓 VITAssist AI</h1>
 
+      <div
+        style={{
+          minHeight: "450px",
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          padding: "15px",
+          marginBottom: "20px",
+          overflowY: "auto",
+        }}
+      >
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            style={{
+              textAlign:
+                msg.role === "user"
+                  ? "right"
+                  : "left",
+              marginBottom: "15px",
+            }}
+          >
+            <b>
+              {msg.role === "user"
+                ? "You"
+                : "VITAssist"}
+            </b>
+
+            <div>{msg.text}</div>
+          </div>
+        ))}
+
+        {loading && (
+          <div>
+            <b>VITAssist</b>
+            <div>🤔 Thinking...</div>
+          </div>
+        )}
+      </div>
+
       <input
         type="text"
         value={question}
-        onChange={(e) => setQuestion(e.target.value)}
         placeholder="Ask anything..."
+        onChange={(e) =>
+          setQuestion(e.target.value)
+        }
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            askQuestion();
+          }
+        }}
         style={{
-          width: "100%",
+          width: "75%",
           padding: "12px",
-          marginBottom: "10px",
         }}
       />
 
       <button
         onClick={askQuestion}
         style={{
-          padding: "10px 20px",
+          padding: "12px",
+          marginLeft: "10px",
           cursor: "pointer",
         }}
       >
-        Ask
+        Send
       </button>
-
-      <div style={{ marginTop: "20px" }}>
-        <h3>Answer:</h3>
-        <p>{answer}</p>
-      </div>
     </div>
   );
 }
