@@ -1,35 +1,96 @@
-# VITAssist AI
+# 🎓 VITAssist AI
 
-VITAssist AI is a Retrieval-Augmented Generation (RAG) chatbot built using React, FastAPI, ChromaDB, and Google's Gemini API.
+VITAssist AI is a Retrieval-Augmented Generation (RAG) chatbot built using React, FastAPI, ChromaDB, and Gemini API.
 
-## Features
+It allows users to ask questions from VIT academic documents and PDFs using semantic search and AI-powered responses.
 
-* Ask questions from VIT academic documents
-* PDF ingestion and chunking
-* Vector search using ChromaDB
+---
+
+## 🚀 Features
+
+* PDF ingestion and processing
+* Semantic search using ChromaDB
 * Gemini-powered answer generation
-* React frontend
 * FastAPI backend
+* React frontend
+* Retrieval-Augmented Generation (RAG)
 
-## Tech Stack
+---
 
-* React + Vite
+## 🛠 Tech Stack
+
+### Frontend
+
+* React
+* Vite
+
+### Backend
+
 * FastAPI
-* ChromaDB
-* Gemini API
 * Python
 
-## Run Locally
+### AI / RAG
+
+* ChromaDB
+* Gemini API
+* PDF Processing
+
+---
+
+## 📂 Project Structure
+
+```text
+vitassist-ai/
+├── api/
+├── frontend/
+├── rag/
+├── data/
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## ⚙️ Installation
+
+### Backend
 
 ```bash
 pip install -r requirements.txt
 uvicorn api.main:app --reload
 ```
 
-Frontend:
+### Frontend
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+
+---
+
+## 🔍 Example Questions
+
+* What is the attendance requirement?
+* When is dinner?
+* What are the library timings?
+* What is a half subtractor?
+
+---
+
+## 📈 Future Improvements
+
+* PDF upload from UI
+* Chat history
+* Source citations
+* Better retrieval ranking
+* Cloud vector database
+
+---
+
+## 👨‍💻 Author
+
+Aryan Singh Sikarwar
+
+Vellore Institute of Technology
