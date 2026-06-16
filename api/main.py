@@ -28,20 +28,28 @@ chroma_client = chromadb.PersistentClient(
     path="./chroma_db"
 )
 
-collection = chroma_client.get_collection(
+# Create collection if missing
+collection = chroma_client.get_or_create_collection(
     name="vit_knowledge"
 )
 
 @app.get("/")
 def home():
     return {
-        "message": "VITAssist API Running 🚀"
+        "message": "VITAssist API Running 🚀",
+        "documents": collection.count()
     }
 
 @app.get("/ask")
 def ask(question: str):
 
-    # Retrieve relevant chunks
+    # Empty DB protection
+    if collection.count() == 0:
+        return {
+            "question": question,
+            "answer": "Knowledge base is empty. Please ingest documents first."
+        }
+
     results = collection.query(
         query_texts=[question],
         n_results=3
@@ -58,8 +66,7 @@ You are VITAssist AI.
 
 Answer ONLY from the provided context.
 
-If the answer is not present in the context,
-reply exactly:
+If the answer is not present in the context, reply:
 
 I don't know based on the available documents.
 
@@ -88,9 +95,8 @@ ANSWER:
 
         print("Gemini Error:", e)
 
-        # Fallback
         return {
             "question": question,
             "answer": context[:1000],
-            "warning": "Gemini quota exceeded. Showing retrieved document content."
+            "warning": "Gemini unavailable. Returning retrieved content."
         }
