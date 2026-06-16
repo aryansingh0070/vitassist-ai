@@ -1,21 +1,35 @@
 # VITAssist AI
 
-AI-powered campus assistant built with:
-
-- React
-- FastAPI
-- Gemini 2.5 Flash
-- ChromaDB
-- Retrieval-Augmented Generation (RAG)
+VITAssist AI is a Retrieval-Augmented Generation (RAG) chatbot built using React, FastAPI, ChromaDB, and Google's Gemini API.
 
 ## Features
 
-- Semantic search
-- Vector database
-- Campus knowledge base
-- REST API
-- React frontend
+* Ask questions from VIT academic documents
+* PDF ingestion and chunking
+* Vector search using ChromaDB
+* Gemini-powered answer generation
+* React frontend
+* FastAPI backend
 
-## Architecture
+## Tech Stack
 
-React → FastAPI → ChromaDB → Gemini
+* React + Vite
+* FastAPI
+* ChromaDB
+* Gemini API
+* Python
+
+## Run Locally
+
+```bash
+pip install -r requirements.txt
+uvicorn api.main:app --reload
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
